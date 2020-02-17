@@ -53,55 +53,50 @@ for line in lines:
 #plt.imshow(line_image)
 
 #7. improving line drawing
+xleft=[]
+yleft=[]
+xright=[]
+yright=[]
+
 coords=[(460,540),(460,300),(520,300),(960,540)]
 poly=Polygon(coords)
-left=[]
-right=[]
+yboth=np.linspace(540,350,num=2,endpoint=True)
+
 for line in lines:
     for x1,y1,x2,y2 in line:
+        #cv2.line(line_image,(x1,y1),(x2,y2),(255,0,0),10)
         p1=Point(x1,y1)
-        p2=Point(x2,y2)
         if(p1.within(poly)):
-            right.append(p1)
-            right.append(p2)
+            xright.append(x1)
+            xright.append(x2)
+            yright.append(y1)
+            yright.append(y2)
         else:
-            left.append(p1)
-            left.append(p2)
+            xleft.append(x1)
+            xleft.append(x2)
+            yleft.append(y1)
+            yleft.append(y2)
 
-yboth=np.linspace(540,320,num=2,endpoint=True)
-
-x=[]
-y=[]
-for p in left:
-    x.append(p.x)
-    y.append(p.y)
-
-xnum=np.asarray(x)
-ynum=np.asarray(y)
-zleft=np.polyfit(xnum, ynum, 1)
+xleft=np.asarray(xleft)
+yleft=np.asarray(yleft)
+zleft=np.polyfit(xleft,yleft,1)
 
 xleft=((yboth-zleft[1])/zleft[0])
 
-x=[]
-y=[]
-for p in right:
-    x.append(p.x)
-    y.append(p.y)
+xright=np.asarray(xright)
+yright=np.asarray(yright)
+zright=np.polyfit(xright,yright,1)
 
-xnum=np.asarray(x)
-ynum=np.asarray(y)
-
-zright=np.polyfit(xnum, ynum, 1)
 xright=((yboth-zright[1])/zright[0])
-
-final_image=np.copy(image)
 
 yboth=yboth.astype(int)
 xleft=xleft.astype(int)
 xright=xright.astype(int)
 
+final_image=np.copy(image)
 cv2.line(final_image,(xleft[0],yboth[0]),(xleft[1],yboth[1]),(255,0,0),5)
 cv2.line(final_image,(xright[0],yboth[0]),(xright[1],yboth[1]),(255,0,0),5)
 plt.imshow(final_image)
+
 
 plt.show()
