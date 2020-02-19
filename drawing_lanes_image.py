@@ -14,13 +14,13 @@ print("hello")
 #1. Convert to greyscale
 grey=ncv.Grey(image)
 #plt.imshow(grey)
-cv2.imshow('grey',grey)
+#cv2.imshow('grey',grey)
 
 #2. smooth the image with a guassian blur
 kernel_size=13
 blur_grey=ncv.Gaussian(grey,kernel_size)
 #plt.imshow(blur_grey)
-cv2.imshow('blur_grey',blur_grey)
+#cv2.imshow('blur_grey',blur_grey)
 
 #3. canny to do edge detection
 low=72
@@ -28,7 +28,7 @@ high=161
 #edges=cv2.Canny(blur_grey, low,high)
 edges=ncv.Canny(blur_grey,low,high)
 #plt.imshow(edges)
-cv2.imshow('edges',edges)
+('edges',edges)
 
 #4. create a mask for a region of interest simultaneously
 mask=np.zeros_like(edges)
@@ -37,12 +37,12 @@ red=255
 roi=np.array([[(0,540),(400,300),(520,300),(960,540)]],dtype=np.int32)
 cv2.fillPoly(mask,roi,red)
 #plt.imshow(mask)
-cv2.imshow('mask',mask)
+##cv2.imshow('mask',mask)
 
 #5. create an image which only has the road markings and the edge obtained from canny
 masked_edges=cv2.bitwise_and(edges,mask)
 #plt.imshow(masked_edges)
-cv2.imshow('masked_edges',masked_edges)
+##cv2.imshow('masked_edges',masked_edges)
 #6. do the hough transform on the masked_edges obtained
 rho=2
 theta=np.pi/180
@@ -55,7 +55,7 @@ for line in lines:
     for x1,y1,x2,y2 in line:
         cv2.line(line_image,(x1,y1),(x2,y2),(255,0,0),5)
 #plt.imshow(line_image)
-cv2.imshow('line_image',line_image)
+##cv2.imshow('line_image',line_image)
 
 #7. improving line drawing
 xleft=[]
@@ -109,7 +109,7 @@ cv2.line(final_image,(xright[1],yboth[1]),(xright[2],yboth[2]),(255,0,0),5)
 cv2.line(final_image,(xright[2],yboth[2]),(xright[3],yboth[3]),(255,0,0),5)
 
 #plt.imshow(final_image)
-cv2.imshow('final_image',final_image)
+##cv2.imshow('final_image',final_image)
 
 '''
 final_image_2=np.copy(image)
@@ -119,6 +119,24 @@ npleft=npleft.reshape((-1,1,2))
 cv2.polylines(final_image_2,npleft,True,(255,0,0),thickness=5)
 plt.imshow(final_image_2)
 '''
+
+yboth=np.linspace(540,350,num=60,endpoint=True)
+xleft=pleft(yboth)
+xright=pright(yboth)
+yboth=yboth.astype(int)
+xleft=xleft.astype(int)
+xright=xright.astype(int)
+
+final=image
+implot=plt.imshow(final)
+plt.plot(xleft,yboth)
+plt.plot(xright,yboth)
+
+#color_final=np.hstack((final,final,final))
+
+image_final=cv2.addWeighted(image,0.8,implot,1,0)
+cv2.imshow('final',image_final)
+
 #cv2.show()
 cv2.waitKey(0)
 
